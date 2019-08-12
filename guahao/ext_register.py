@@ -1,6 +1,6 @@
 import os
 import time
-
+from datetime import datetime
 import execjs
 import pymongo
 import difflib
@@ -17,9 +17,9 @@ class CrawlGuaHao(object):
     def __init__(self):
         self.client = pymongo.MongoClient('localhost')
         self.db = self.client['114gh']
-        self.collection = self.db['114gh']
+        self.departments = self.db['departments']
 
-        self.collection_info = self.db['guahao_info']
+        self.outpatient = self.db['outpatient']
 
         self.login_url = 'http://www.114yygh.com/account/loginStep1.htm'
         self.post_url = 'http://www.114yygh.com/account/loginStep2.htm'
@@ -89,14 +89,15 @@ class CrawlGuaHao(object):
             for value in data.values():
                 for i in value:
                     ratio = difflib.SequenceMatcher(None, i['doctorName'], i['doctorTitleName']).quick_ratio()
-                    if ratio < 0.1 and (i['doctorName'] not in '医生普通号肾内科主治医师'):
+                    if ratio < 0.4 and (i['doctorName'] not in '医生普通号肾内科主治医师'):
                         yield {
                             'doctorName': i['doctorName'],
                             'doctorTitleName': i['doctorTitleName'],
                             'skill': i['skill'],
                             'dutyDate': ' '.join([kwargs['dutyDate'], args[0], i['dutyCodeName']]),
                             'totalFee': i['totalFee'],
-                            'remainAvailableNumber': i['remainAvailableNumber'],
+                            'remainAvailableNumber': [{'remain': i['remainAvailableNumber'],
+                                                       'getTime': datetime.now().strftime('%Y-%m-%d %H:%M')}],
                             'hospId': '-'.join([kwargs['hospitalId'], kwargs['departmentId']])
                         }
                     else:
@@ -117,31 +118,41 @@ class CrawlGuaHao(object):
         url = 'http://www.114yygh.com/dpt/week/calendar.htm'
         week = 1
         while True:
-            json = self.get_data(url, week=week, **kwargs)
-            time.sleep(0.4)  # 等待网页加载
-            for item in json['dutyCalendars']:
-                if item.get('remainAvailableNumber') != -1:
-                    date = item.get('dutyDate')
-                    dutyWeek = '周' + item.get('dutyWeek')
-                    results = self.parse_registed_info(dutyWeek, dutyDate=date, **kwargs)
-                    for result in results:
-                        # print(result)
-                        self.save_to_mongo(result)  # 数据保存到MongoDB中
+            try:
+                json = self.get_data(url, week=week, **kwargs)
+                time.sleep(0.3)  # 等待网页加载
+                for item in json['dutyCalendars']:
+                    if item.get('remainAvailableNumber') != -1:
+                        date = item.get('dutyDate')
+                        dutyWeek = '周' + item.get('dutyWeek')
+                        results = self.parse_registed_info(dutyWeek, dutyDate=date, **kwargs)
+                        for result in results:
+                            # print(result)
+                            self.save_to_mongo(result)  # 数据保存到MongoDB中
 
-            lastweek = json['lastWeek']
-            week = json['week']
-            if week < lastweek:
-                week += 1
-            else:
-                break
+                lastweek = json['lastWeek']
+                week = json['week']
+                if week < lastweek:
+                    week += 1
+                else:
+                    break
+            except Exception as e:
+                print('index:', repr(e))
 
     def save_to_mongo(self, result):
-        self.collection_info.insert_one(result)
-        print(result)
+        query = {'doctorName': result['doctorName'], 'dutyDate': result['dutyDate']}
+        if self.outpatient.find_one(query):
+            self.outpatient.update_one({'doctorName': result['doctorName'], 'dutyDate': result['dutyDate'],
+                                        'remainAvailableNumber.remain': {"$ne": 0}},  # 数组所有remain都不为0
+                                       {'$push': {'remainAvailableNumber': result['remainAvailableNumber'][0]}})
+            print(result['remainAvailableNumber'])
+        else:
+            self.outpatient.insert_one(result)
+            print(result)
 
     def main(self):
         self.login()
-        for item in self.collection.find({}, no_cursor_timeout=True):
+        for item in self.departments.find({}, no_cursor_timeout=True):
             link = item.get('link')
             print(link)
             Id = link.replace('.htm', '').split('/')[-1].split('-')  # 提取医院和科室的id
