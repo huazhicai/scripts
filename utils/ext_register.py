@@ -89,7 +89,7 @@ class CrawlGuaHao(object):
             for value in data.values():
                 for i in value:
                     ratio = difflib.SequenceMatcher(None, i['doctorName'], i['doctorTitleName']).quick_ratio()
-                    if ratio < 0.4 and (i['doctorName'] not in '医生普通号肾内科主治医师'):
+                    if ratio < 0.4 and (i['doctorName'] not in '医生普通号肾内科主治医师') or '康志敏' in i['doctorName']:
                         yield {
                             'doctorName': i['doctorName'],
                             'doctorTitleName': i['doctorTitleName'],
