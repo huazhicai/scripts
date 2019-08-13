@@ -2,6 +2,7 @@
 __author__ = seven
 """
 import pymongo
+from guahao.guahao.settings import MONGO_URL, MONGO_PORT, MONGO_DB
 
 
 class Combination(object):
@@ -10,8 +11,8 @@ class Combination(object):
     """
 
     def __init__(self):
-        self.client = pymongo.MongoClient('localhost')
-        self.db = self.client['114gh']
+        self.client = pymongo.MongoClient(MONGO_URL, MONGO_PORT)
+        self.db = self.client[MONGO_DB]
         self.departments = self.db['departments']  # 肾病科集合
         self.outpatient = self.db['outpatient']  # 门诊信息集合
 
@@ -27,8 +28,9 @@ class Combination(object):
                           self.outpatient.find({'doctorName': doctor})]
             dict_1 = self.outpatient.find_one({'doctorName': doctor})
             dict_2 = self.departments.find_one({'link': {"$regex": dict_1['hospId']}})
-            union_id = self.official.find_one(
-                {'name': dict_1['doctorName'], 'link': {"$regex": dict_2.get('website', None)}})
+            pattern_website = dict_2.get('website', None).split('.')[1] if dict_2.get('website', None) else None
+            dict_3 = self.official.find_one({'name': dict_1['doctorName'][:3], 'link': {"$regex": pattern_website}})
+            union_id = dict_3.get('_id') if dict_3 else None
 
             yield {
                 'city': dict_2['city'],

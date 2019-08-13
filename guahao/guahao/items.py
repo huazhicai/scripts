@@ -16,7 +16,9 @@ class GuahaoItem(Item):
         input_processor=MapCompose(lambda x: x.split('—')[1])
     )
     address = Field()
-    website = Field()
+    website = Field(
+        input_processor=MapCompose(lambda x: x.strip().strip('http://'))
+    )
     phone = Field()
     traffic = Field(
         input_processor=MapCompose(lambda x: x.strip())
@@ -25,7 +27,9 @@ class GuahaoItem(Item):
         input_processor=MapCompose(remove_tags, lambda x: x.split('\n')[0]),
         output_processor=Identity()
     )
-    link = Field()
+    link = Field(
+        input_processor=MapCompose(lambda x: x.strip())
+    )
     city = Field()
 
 

@@ -7,8 +7,14 @@ from ..items import GradeItem
 class A114ghSpider(scrapy.Spider):
     name = '114gh'
     allowed_domains = ['www.114yygh.com']
-    # start_urls = ['http://www.114yygh.com/hp/1_0_3_0.htm']
 
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'guahao.pipelines.GradePipeline': 300,
+        }
+    }
+
+    # start_urls = ['http://www.114yygh.com/hp/1_0_3_0.htm']
     def start_requests(self):
         for i in range(1, 12):
             url = 'http://www.114yygh.com/hp/{}_0_3_0.htm?'.format(i)

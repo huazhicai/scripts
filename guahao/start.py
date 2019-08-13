@@ -1,6 +1,11 @@
 from scrapy import cmdline
+import time
 
-# cmdline.execute("scrapy crawl haodf".split())
 
-# cmdline.execute("scrapy crawl 114yygh".split())
-cmdline.execute("scrapy crawl 114gh".split())
+def run():
+    for i in ['114yygh', '114gh']:
+        time.sleep(3)
+        cmdline.execute("scrapy crawl {}".format(i).split())
+
+
+# cmdline.execute("scrapy crawl 114gh".split())

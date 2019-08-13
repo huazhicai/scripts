@@ -12,8 +12,9 @@ class A114yyghSpider(CrawlSpider):
 
     custom_settings = {
         'CITY': '北京',
-        'MONGO_URI': 'localhost',
-        'MONGO_DB': '114gh'
+        'ITEM_PIPELINES': {
+            'guahao.pipelines.MongoPipeline': 300,
+        }
     }
 
     # start_urls = ['http://www.114yygh.com/hp/1_0_3_0.htm']
