@@ -7,11 +7,14 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.90 Safari/537.36'
 }
 
-MONGO_URL = 'localhost'
-MONGO_DB = 'kidney'
-COLLECTION = 'three_bj'
+MONGO_URL = '10.0.31.20'
+PORT = 27017
 
-client = pymongo.MongoClient(MONGO_URL, connect=False)
+# MONGO_DB = 'kidney'
+MONGO_DB = 'test'
+COLLECTION = 'official'
+
+client = pymongo.MongoClient(host=MONGO_URL, port=PORT, connect=False)
 db = client[MONGO_DB]
 collection = db[COLLECTION]
 
