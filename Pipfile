@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 pymongo = "*"
 scrapy = "*"
+requests = "*"
+pyquery = "*"
 
 [requires]
 python_version = "3.7"
