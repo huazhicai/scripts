@@ -7,7 +7,7 @@ import difflib
 import requests
 from lxml import etree
 
-from guahao.guahao.settings import MONGO_URL, MONGO_DB, MONGO_PORT, PHONE
+from config import *
 
 
 class CrawlGuaHao(object):

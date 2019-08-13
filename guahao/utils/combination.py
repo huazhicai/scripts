@@ -2,7 +2,7 @@
 __author__ = seven
 """
 import pymongo
-from guahao.guahao.settings import MONGO_URL, MONGO_PORT, MONGO_DB
+from config import MONGO_URL, MONGO_PORT, MONGO_DB
 
 
 class Combination(object):

@@ -3,7 +3,7 @@
 """
 import pymongo
 
-from guahao.guahao.settings import MONGO_URL, MONGO_DB, MONGO_PORT
+from config import MONGO_URL, MONGO_DB, MONGO_PORT
 
 
 class Transfer(object):
