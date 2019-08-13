@@ -2,7 +2,7 @@
 解放军第306医院 肾内科
 """
 
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(link):

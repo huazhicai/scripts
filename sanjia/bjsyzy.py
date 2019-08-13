@@ -2,7 +2,7 @@
 北京市顺义区中医医院 肾病科
 """
 
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def get_json(url):

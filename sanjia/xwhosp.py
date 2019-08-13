@@ -2,7 +2,7 @@
 宣武医院 肾科
 """
 
-from sanjia.common import *
+from sanjia.utils.common import *
 from lxml import etree
 
 

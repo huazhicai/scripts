@@ -1,7 +1,7 @@
 """
 解放军总医院第八医学中心 肾脏病科
 """
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(link):

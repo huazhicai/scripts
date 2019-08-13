@@ -1,7 +1,7 @@
 """
 航天总医院 肾内科
 """
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(link):

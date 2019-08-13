@@ -3,7 +3,7 @@
 """
 from multiprocessing.pool import Pool
 
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(link):

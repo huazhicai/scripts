@@ -1,7 +1,7 @@
 """
 北京市隆福医院 肾病科
 """
-from sanjia.common import *
+from sanjia.utils.common import *
 from lxml import etree
 
 

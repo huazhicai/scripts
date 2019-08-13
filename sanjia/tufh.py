@@ -1,7 +1,7 @@
 """
 北京华信医院 肾病科
 """
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(link):

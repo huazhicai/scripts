@@ -1,6 +1,6 @@
 # 首都医科大学附属北京朝阳医院
 # 肾内科科室专家，代号 289
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(url):

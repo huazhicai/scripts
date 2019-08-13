@@ -2,9 +2,7 @@
 解放军总医院第四医学中心 肾内科
 """
 
-from multiprocessing.pool import Pool
-
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(link):

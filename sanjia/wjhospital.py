@@ -4,7 +4,7 @@
 
 
 
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def get_detail_url(html):

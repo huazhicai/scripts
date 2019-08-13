@@ -2,7 +2,7 @@
 北京市第一中西结合医院 肾内科
 """
 import json
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(url):

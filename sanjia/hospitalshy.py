@@ -2,7 +2,7 @@
 北京市顺义区医院 肾脏内科
 """
 
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(link):

@@ -1,8 +1,7 @@
 """
 北京友谊医院 肾病内科
 """
-from sanjia.common import *
-from lxml import etree
+from sanjia.utils.common import *
 
 
 def parse_detail(link):

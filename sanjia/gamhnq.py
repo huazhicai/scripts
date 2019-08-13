@@ -2,7 +2,7 @@
 广安门医院南区 肾病科
 """
 from multiprocessing.pool import Pool
-from sanjia.common import *
+from sanjia.utils.common import *
 
 
 def parse_detail(link):
