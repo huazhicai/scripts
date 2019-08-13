@@ -1,6 +1,6 @@
 
-MONGO_URL = '1.tcp.cpolar.io'
-MONGO_PORT = 10090
+MONGO_URL = 'localhost'
+MONGO_PORT = 27017
 MONGO_DB = 'kidney'
 
 PHONE = '18701943997'

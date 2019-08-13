@@ -14,10 +14,10 @@ crawl = CrawlGuaHao()
 combine = Combination()
 transfer = Transfer()
 
-schedule.every().day.at("17:00").do(crawl.main)
-schedule.every().day.at("18:10").do(combine.save_to_mongo)
-schedule.every().day.at("18:30").do(transfer.transfer_data)
-schedule.every().sunday.at("08:00").do(run)
+schedule.every().day.at("08:00").do(crawl.main)
+schedule.every().day.at("08:10").do(combine.save_to_mongo)
+schedule.every().day.at("08:30").do(transfer.transfer_data)
+schedule.every().day.at("00:00").do(run)
 
 while True:
     schedule.run_pending()

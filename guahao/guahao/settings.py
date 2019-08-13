@@ -90,7 +90,7 @@ DOWNLOAD_DELAY = 1
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 
-MONGO_URL = '1.tcp.cpolar.io'
-MONGO_PORT = 10090
+MONGO_URL = 'localhost'
+MONGO_PORT = 27017
 MONGO_DB = 'kidney'
 
