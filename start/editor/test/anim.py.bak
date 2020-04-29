@@ -1,0 +1,195 @@
+# coding:utf-8
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+import sys
+from functools import partial
+# import animatedtiles_rc2
+from PyQt5.QtWidgets import QGraphicsView, QApplication, QGraphicsScene, QGraphicsRectItem, QStyle, QGraphicsItem, \
+    QGraphicsWidget
+
+
+class Button(QGraphicsWidget):
+    pressed = pyqtSignal()
+
+    def __init__(self, pixmap, parent=None):
+        super(Button, self).__init__(parent)
+
+        self._pix = pixmap
+        self.setAcceptHoverEvents(True)
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+
+    def boundingRect(self):
+        return QRectF(-65, -65, 130, 130)
+
+    def shape(self):
+        path = QPainterPath()
+        path.addEllipse(self.boundingRect())
+
+        return path
+
+    def paint(self, painter, option, widget):
+        down = option.state & QStyle.State_Sunken
+        r = self.boundingRect()
+
+        grad = QLinearGradient(r.topLeft(), r.bottomRight())
+        if option.state & QStyle.State_MouseOver:
+            color_0 = Qt.white
+        else:
+            color_0 = Qt.lightGray
+
+        color_1 = Qt.darkGray
+
+        if down:
+            color_0, color_1 = color_1, color_0
+
+        grad.setColorAt(0, color_0)
+        grad.setColorAt(1, color_1)
+
+        painter.setPen(Qt.darkGray)
+        painter.setBrush(grad)
+        painter.drawEllipse(r)
+
+        color_0 = Qt.darkGray
+        color_1 = Qt.lightGray
+
+        if down:
+            color_0, color_1 = color_1, color_0
+
+        grad.setColorAt(0, color_0)
+        grad.setColorAt(1, color_1)
+
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(grad)
+
+        if down:
+            painter.translate(2, 2)
+
+        painter.drawEllipse(r.adjusted(5, 5, -5, -5))
+        painter.drawPixmap(-self._pix.width() / 2, -self._pix.height() / 2,
+                           self._pix)
+
+    def mousePressEvent(self, event):
+        self.pressed.emit()
+        self.update()
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+
+
+# class ButtonPanel(QGraphicsRectItem):
+#	def __init__(self):
+#		super(ButtonPanel, self).__init__()
+#		ellipseButton = Button(QPixmap(':/images/ellipse.png'), self)
+#		figure8Button = Button(QPixmap(':/images/figure8.png'), self)
+#		randomButton = Button(QPixmap(':/images/random.png'), self)
+#		tiledButton = Button(QPixmap(':/images/tile.png'), self)
+#		centeredButton = Button(QPixmap(':/images/centered.png'), self)
+
+#		ellipseButton.setPos(-100, -100)
+#		figure8Button.setPos(100, -100)
+#		randomButton.setPos(0, 0)
+#		tiledButton.setPos(-100, 100)
+#		centeredButton.setPos(100, 100)
+
+#		ellipseButton.pressed.connect(partial(self.notice,'ellipse'))
+#		figure8Button.pressed.connect(partial(self.notice,'figure'))
+#		randomButton.pressed.connect(partial(self.notice,'random'))
+#		tiledButton.pressed.connect(partial(self.notice,'tiled'))
+#		centeredButton.pressed.connect(partial(self.notice,'centered'))
+
+#	def notice(self,name):
+#		print 'in notice',name
+#		if name == 'random':
+#			self.scene().animation.start()
+
+class ButtonPanel(QObject):
+    def __init__(self):
+        super(ButtonPanel, self).__init__()
+
+        self.panel = QGraphicsRectItem()
+        ellipseButton = Button(QPixmap(':/images/ellipse.png'), self.panel)
+        figure8Button = Button(QPixmap(':/images/figure8.png'), self.panel)
+        randomButton = Button(QPixmap(':/images/random.png'), self.panel)
+        tiledButton = Button(QPixmap(':/images/tile.png'), self.panel)
+        centeredButton = Button(QPixmap(':/images/centered.png'), self.panel)
+
+        ellipseButton.setPos(-100, -100)
+        figure8Button.setPos(100, -100)
+        randomButton.setPos(0, 0)
+        tiledButton.setPos(-100, 100)
+        centeredButton.setPos(100, 100)
+
+        ellipseButton.pressed.connect(partial(self.notice, 'ellipse'))
+        figure8Button.pressed.connect(partial(self.notice, 'figure'))
+        randomButton.pressed.connect(partial(self.notice, 'random'))
+        tiledButton.pressed.connect(partial(self.notice, 'tiled'))
+        centeredButton.pressed.connect(partial(self.notice, 'centered'))
+
+        self.buttons = [ellipseButton, figure8Button, tiledButton, centeredButton]
+
+    def _set_pos(self, pos):
+        self.panel.setPos(pos)
+
+    def _set_rect(self, rect):
+        self.panel.setRect(rect)
+
+    def _set_fold(self, fold):
+        print('in set_fold', fold)
+        for btn in self.buttons:
+            btn.setGeometry(fold)
+
+    pos = pyqtProperty(QPointF, fset=_set_pos)
+    rect = pyqtProperty(QRectF, fset=_set_rect)
+    fold = pyqtProperty(QRectF, fset=_set_fold)
+
+    def notice(self, name):
+        print('in notice', name)
+        if name == 'random':
+            self.panel.scene().animation.start()
+
+
+class MyScene(QGraphicsScene):
+    def __init__(self):
+        super(MyScene, self).__init__()
+        buttonPanel = ButtonPanel()
+
+        self.addItem(buttonPanel.panel)
+        buttonPanel.panel.scale(0.75, 0.75)
+        buttonPanel.panel.setPos(70, 70)
+
+        # self.animation = QPropertyAnimation(buttonPanel, 'pos')
+        # self.animation.setDuration(3000)
+        # self.animation.setStartValue(QPointF(70,70))
+        # self.animation.setEndValue(QPointF(30,30))
+        # self.animation.setEasingCurve(QEasingCurve.OutBounce)
+
+        # self.animation = QPropertyAnimation(buttonPanel, 'rect')
+        # self.animation.setDuration(3000)
+        # self.animation.setStartValue(QRectF(-100,-100,200,200))
+        # self.animation.setEndValue(QRectF(-50,-50,100,100))
+        # self.animation.setEasingCurve(QEasingCurve.OutBounce)
+
+        self.animation = QPropertyAnimation(buttonPanel, 'fold')
+        self.animation.setDuration(3000)
+        self.animation.setStartValue(QRectF(-65, -65, 130, 130))
+        self.animation.setEndValue(QRectF(0, 0, 1, 1))
+        self.animation.setEasingCurve(QEasingCurve.OutBounce)
+
+
+class MyView(QGraphicsView):
+    def __init__(self):
+        super(MyView, self).__init__()
+
+    def resizeEvent(self, event):
+        super(MyView, self).resizeEvent(event)
+        self.fitInView(self.sceneRect(), Qt.KeepAspectRatio)
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    scene = MyScene()
+    scene.setSceneRect(QRectF(-200, -200, 400, 400))
+    w = MyView()
+    w.setScene(scene)
+    w.show()
+    app.exec_()
