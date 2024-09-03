@@ -1,0 +1,86 @@
+"""
+打印作文写作方格子纸
+"""
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from matplotlib.backends.backend_pdf import PdfPages
+
+# 单个方格的尺寸（毫米）和间隔（毫米）
+box_width = 7.8
+box_height = 8.1
+vertical_spacing = 2.5
+
+# 外围大线框距离（毫米）
+outer_margin = 2
+
+# A4纸的尺寸（毫米）
+page_width_mm = 210
+page_height_mm = 297
+
+# 网格的行和列数
+rows = 24
+cols = 25
+
+# 图片尺寸调整为A4
+page_width_inch = page_width_mm / 25.4
+page_height_inch = page_height_mm / 25.4
+
+# 计算网格的总宽度和高度
+drawing_width = cols * box_width + 2 * outer_margin
+drawing_height = rows * (box_height + vertical_spacing) - vertical_spacing + 2 * outer_margin
+
+# 计算水平和垂直起始点，使网格居于A4纸的中间
+start_x = (page_width_mm - drawing_width) / 2 + outer_margin
+start_y = (page_height_mm - drawing_height) / 2 + outer_margin
+
+# 创建画图区域
+fig, ax = plt.subplots(figsize=(page_width_inch, page_height_inch))
+
+# 设置颜色
+box_color = 'lightcoral'
+text_color = 'lightcoral'
+
+# 绘制网格
+for row in range(rows):
+    for col in range(cols):
+        x = start_x + col * box_width
+        y = start_y + row * (box_height + vertical_spacing)
+        rect = Rectangle((x, y), box_width, box_height, fill=None, edgecolor=box_color, linewidth=0.4)
+        ax.add_patch(rect)
+
+# 添加字数标记
+total_chars = rows * cols
+for row in range(rows):
+    if (row + 1) % 4 == 0:  # 每4行标记一次
+        text_x = start_x - vertical_spacing
+        text_y = start_y + row * (box_height + vertical_spacing) + box_height / 2
+        char_count = (row + 1) * cols // 100
+        ax.text(text_x, text_y, str(char_count), va='center', ha='right', fontsize=8, color=text_color, rotation=180)
+
+# 绘制外框
+outer_box_width = cols * box_width
+outer_box_height = rows * (box_height + vertical_spacing) - vertical_spacing  # 减去最后一个间隔
+outer_rect = Rectangle((start_x - outer_margin, start_y - outer_margin),
+                       outer_box_width + 2 * outer_margin, outer_box_height + 2 * outer_margin,
+                       fill=None, edgecolor=box_color, linewidth=1)
+ax.add_patch(outer_rect)
+
+# 设置范围和比例
+ax.set_xlim(0, page_width_mm)
+ax.set_ylim(0, page_height_mm)
+ax.set_aspect('equal')
+
+# 去掉刻度
+ax.axis('off')
+
+# 保存为PDF
+pdf_filename = 'double_frame.pdf'
+with PdfPages(pdf_filename) as pdf:
+    pdf.savefig(fig, bbox_inches='tight')
+    pdf.savefig(fig, bbox_inches='tight')
+
+# 保存为PNG
+# png_filename = 'tianzige_paper_with_outer_frame.png'
+# plt.savefig(png_filename, dpi=300, bbox_inches='tight')
+#
+# plt.show()
